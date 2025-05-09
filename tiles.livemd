@@ -1,0 +1,49 @@
+# Tiles notebook
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.7"},  # For interactive examples
+  {:vix, "~> 0.5"},
+  {:tiles, path: ".", env: :dev}
+])
+
+```
+
+## Create the tile pattern and a room
+
+```elixir
+pattern = FrenchPattern.new()
+
+# The room size in mm
+room_width = 3340
+room_height = 3500
+
+# Generate the tiles for the given room
+room_tiles = FrenchPattern.arrange(room_width, room_height, pattern)
+# room_tiles = pattern.tiles
+
+# Calculate the distances between the tiles in the room
+Tiles.distances(room_tiles)
+# Print only the gaps that are outside the given range
+|> Enum.filter(fn {dx, dy, _i, _} -> 
+  dx > 6 or dy > 6 or (dx > 0 and dx < 4) or (dy > 0 and dy < 4) end)
+```
+
+## Display the tile pattern in the room
+
+```elixir
+alias Vix.Vips.Image
+alias Vix.Vips.Operation
+
+floor = Image.build_image!(room_width, room_height, [0xaa,0xaa,0xaa])
+
+List.foldl(room_tiles, floor, fn tile, acc ->
+  Operation.composite2!(
+    acc, 
+    Image.build_image!(tile.width, tile.height, [Integer.mod(tile.x, 255), 0xE5, 0x99]), 
+    :VIPS_BLEND_MODE_OVER, 
+    x: tile.x, 
+    y: tile.y)
+  end)
+
+```

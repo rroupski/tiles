@@ -8,25 +8,29 @@ defmodule FrenchPattern do
   "cells" within the tile. Each cell is specified with relative offsets inside the tile
   where an image is placed.
   """
-
   def new() do
+    tiles = [
+      Tile.new(2, 0, 406, 406),
+      Tile.new(0, 410, 203, 406),
+      Tile.new(207, 410, 203, 203),
+      Tile.new(207, 619, 406, 406),
+      Tile.new(207, 1029, 203, 203),
+      Tile.new(414, 207, 406, 406),
+      Tile.new(416, 1031, 610, 406),
+      Tile.new(619, 617, 203, 203),
+      Tile.new(619, 824, 406, 203),
+      Tile.new(826, 209, 406, 610),
+      Tile.new(1031, 2, 203, 203),
+      Tile.new(1031, 825, 406, 406)
+    ]
+
+    {width, height} = Tiles.dimensions(tiles)
+    {min_width, min_height} = Tiles.min(tiles)
+
     %{
-      width: 1437,
-      height: 1437,
-      tiles: [
-        %Tile{width: 406, height: 406, x: 2, y: 0},
-        %Tile{width: 203, height: 406, x: 0, y: 410},
-        %Tile{width: 203, height: 203, x: 207, y: 410},
-        %Tile{width: 406, height: 406, x: 207, y: 619},
-        %Tile{width: 203, height: 203, x: 207, y: 1029},
-        %Tile{width: 406, height: 406, x: 414, y: 207},
-        %Tile{width: 610, height: 406, x: 416, y: 1031},
-        %Tile{width: 203, height: 203, x: 619, y: 617},
-        %Tile{width: 406, height: 203, x: 619, y: 824},
-        %Tile{width: 406, height: 610, x: 826, y: 209},
-        %Tile{width: 203, height: 203, x: 1031, y: 2},
-        %Tile{width: 406, height: 406, x: 1031, y: 825}
-      ]
+      width: width - min_width,
+      height: height - min_height,
+      tiles: tiles
     }
   end
 
@@ -39,12 +43,11 @@ defmodule FrenchPattern do
     - width: The width of the room.
     - height: The height of the room.
     - pattern: A map defining the repeating pattern. It must include:
-         :width, :height, and :tiles (a list of Tile with :width, :height, :x, and :y).
+         :width, :height, and :tiles (a list of %{Tile} with :width, :height, :x, and :y).
 
   ## Returns:
     - placements where:
-         - placements: A list of Tiles. Each map contains:
-             :x, :y, :width, and :height that describe the tile and its position.
+         - placements: A list of %{Tile}
   """
   def arrange(width, height, pattern) do
     # Determine how many patterns (based on the pattern dimensions) can fit
@@ -69,7 +72,7 @@ defmodule FrenchPattern do
     )
 
     if length(pattern.tiles) < length(available_tiles) do
-      # Not enough distinct tiles: cycle through the images to fill every cell.      
+      # Not enough distinct tiles: cycle through the images to fill every cell.
       Enum.zip(available_tiles, Stream.cycle(pattern.tiles))
       |> placements()
     else
@@ -81,7 +84,7 @@ defmodule FrenchPattern do
 
   defp placements(col) do
     Enum.map(col, fn {cell, tile} ->
-      %Tile {
+      %Tile{
         x: cell.x,
         y: cell.y,
         width: tile.width,
