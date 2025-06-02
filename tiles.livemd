@@ -17,7 +17,7 @@ room_width = 3340
 room_height = 3500
 
 pattern = # FrenchPattern.new4()
-  FrenchPattern.new_x(4)
+  FrenchPattern.new_x(5)
   # |> ImageGrid.space_out_images(6, 6)
   |> FrenchPattern.new()
 
@@ -69,7 +69,7 @@ List.foldl(room_tiles, floor, fn tile, acc ->
   # Create high-quality text overlay with anti-aliasing
   {text, _} =
     Operation.text!(
-      "#{tile.width}x#{tile.height}",
+      "#{tile.i}\n#{tile.width}x#{tile.height}",
       width: 400,
       dpi: 300,         # High DPI ensures sharp text at any size
       font: "IBM Mono",

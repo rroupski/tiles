@@ -46,18 +46,18 @@ defmodule FrenchPattern do
     dy = div(spacer, 2)
 
     [
-      Tile.new(dx, 0, @s406, @s406),
-      Tile.new(0 * @s203 + 0 * spacer, 2 * @s203 + 1 * spacer + dy, @s203, @s406),
-      Tile.new(1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer, @s203, @s203),
-      Tile.new(1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy, @s406, @s406),
-      Tile.new(1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy, @s203, @s203),
-      Tile.new(2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer, @s406, @s406),
-      Tile.new(2 * @s203 + 2 * spacer + dx, 5 * @s203 + 4 * spacer, @s610, @s406),
-      Tile.new(3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer, @s203, @s203),
-      Tile.new(3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer, @s406, @s203),
-      Tile.new(4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy, @s406, @s610),
-      Tile.new(5 * @s203 + 4 * spacer, 0, @s203, @s203),
-      Tile.new(5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer, @s406, @s406)
+      Tile.new(0, dx, 0, @s406, @s406),
+      Tile.new(1, 0 * @s203 + 0 * spacer, 2 * @s203 + 1 * spacer + dy, @s203, @s406),
+      Tile.new(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer, @s203, @s203),
+      Tile.new(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy, @s406, @s406),
+      Tile.new(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy, @s203, @s203),
+      Tile.new(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer, @s406, @s406),
+      Tile.new(6, 2 * @s203 + 2 * spacer + dx, 5 * @s203 + 4 * spacer, @s610, @s406),
+      Tile.new(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer, @s203, @s203),
+      Tile.new(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer, @s406, @s203),
+      Tile.new(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy, @s406, @s610),
+      Tile.new(10, 5 * @s203 + 4 * spacer, 0, @s203, @s203),
+      Tile.new(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer, @s406, @s406)
     ]
   end
 
@@ -121,8 +121,11 @@ defmodule FrenchPattern do
   end
 
   defp placements(col) do
-    Enum.map(col, fn {cell, tile} ->
+    col
+    |> Enum.with_index()
+    |> Enum.map(fn {{cell, tile}, i} ->
       %Tile{
+        i: i,
         x: cell.x,
         y: cell.y,
         width: tile.width,

@@ -6,9 +6,10 @@ defmodule Tile do
     • height      — its extent along the y-axis (must be ≥ 0)
   """
 
-  defstruct [:x, :y, :width, :height]
+  defstruct [:i, :x, :y, :width, :height]
 
   @type t :: %__MODULE__{
+          i: integer(),
           x: integer(),
           y: integer(),
           width: non_neg_integer(),
@@ -18,12 +19,22 @@ defmodule Tile do
   @doc """
   Creates a new tile, enforcing non-negative width and height.
   """
-  @spec new(number(), number(), non_neg_integer(), non_neg_integer()) :: t()
+  @spec new(integer(), integer(), non_neg_integer(), non_neg_integer()) :: t()
   def new(x, y, width, height) when width >= 0 and height >= 0 do
-    %__MODULE__{x: x, y: y, width: width, height: height}
+    %__MODULE__{i: -1, x: x, y: y, width: width, height: height}
   end
 
   def new(_, _, width, height) do
+    raise ArgumentError,
+          "width and height must be non-negative, got width=#{width}, height=#{height}"
+  end
+
+  @spec new(integer(), integer(), integer(), non_neg_integer(), non_neg_integer()) :: t()
+  def new(i, x, y, width, height) when width >= 0 and height >= 0 do
+    %__MODULE__{i: i, x: x, y: y, width: width, height: height}
+  end
+
+  def new(_, _, _, width, height) do
     raise ArgumentError,
           "width and height must be non-negative, got width=#{width}, height=#{height}"
   end
