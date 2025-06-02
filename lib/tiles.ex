@@ -108,25 +108,6 @@ defmodule Tiles do
     Tile.new(left, top, right - left, bottom - top)
   end
 
-  def space_out(tiles, gap_x, gap_y) do
-    tiles
-    |> distances()
-    |> space(gap_x, gap_y)
-  end
-
-  defp space(distances, gap_x, gap_y) do
-    Enum.map(distances, fn {i, l} ->
-      {i,
-       Enum.map(l, fn {j, [dx, dy]} ->
-         cond do
-           dx > gap_x -> {j, [gap_x, dy]}
-           dy > gap_y -> {j, [dx, gap_y]}
-           true -> {j, [dx, dy]}
-         end
-       end)}
-    end)
-  end
-
   def filter(tiles, min \\ 4, max \\ 6) do
     Enum.each(tiles, fn {i, a} ->
       Enum.filter(a, fn {_t, [dx, dy]} ->
