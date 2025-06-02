@@ -16,22 +16,17 @@ Mix.install([
 room_width = 3340
 room_height = 3500
 
-pattern = # FrenchPattern.new4()
-  FrenchPattern.new_x(5)
-  # |> ImageGrid.space_out_images(6, 6)
-  |> FrenchPattern.new()
+pattern = FrenchPattern.new4()
 
 # room_width =  pattern.width
 # room_height = pattern.height
 
-# Generate the tiles for the given room
+# Generate the tiles for a given room
 room_tiles = FrenchPattern.arrange(pattern, room_width, room_height)
 
 # Calculate the distances between the tiles in the room
 # Print only the gaps that are outside the given range
-# Tiles.distances(room_tiles) |> Tiles.filter(4, 6) # |> length()
-
-# ImageGrid.side_distances(room_tiles, ImageGrid.find_adjacent(room_tiles))
+Tiles.distances(room_tiles) |> Tiles.filter(4, 6) # |> length()
 
 ```
 
