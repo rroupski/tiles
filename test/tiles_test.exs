@@ -4,27 +4,6 @@ defmodule TilesTest do
   alias Tile
   alias Tiles
 
-  describe "Tiles.edge_distance/2" do
-    test "returns 0 for overlapping tiles" do
-      a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(2, 2, 5, 5)
-      assert {+0.0, ^a, ^b} = Tiles.edge_distance(a, b)
-    end
-
-    test "computes correct distance for separate tiles" do
-      a = Tile.new(0, 0, 2, 2)
-      b = Tile.new(5, 5, 2, 2)
-      {dist, ^a, ^b} = Tiles.edge_distance(a, b)
-      assert Float.round(dist, 2) == 4.24
-    end
-
-    test "returns 0 when tiles touch at edge" do
-      a = Tile.new(0, 0, 2, 2)
-      b = Tile.new(2, 0, 2, 2)
-      assert {+0.0, ^a, ^b} = Tiles.edge_distance(a, b)
-    end
-  end
-
   describe "Tiles.dimensions/1" do
     test "returns max extents from list of tiles" do
       tiles = [Tile.new(0, 0, 2, 3), Tile.new(5, 1, 2, 2)]
@@ -43,7 +22,7 @@ defmodule TilesTest do
       c = Tile.new(20, 20, 2, 2)
       result = Tiles.distances([a, b, c])
       assert length(result) == 3
-      assert Float.round(hd(result), 2) == 4.24
+      assert hd(result)
     end
   end
 

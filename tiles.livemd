@@ -12,21 +12,39 @@ Mix.install([
 ## Create the tile pattern and a room
 
 ```elixir
-pattern = FrenchPattern.new()
-
 # The room size in mm
 room_width = 3340
 room_height = 3500
 
+pattern = # FrenchPattern.new4()
+  FrenchPattern.new_x(4)
+  # |> ImageGrid.space_out_images(6, 6)
+  |> FrenchPattern.new()
+
+# room_width =  pattern.width
+# room_height = pattern.height
+
 # Generate the tiles for the given room
-room_tiles = FrenchPattern.arrange(room_width, room_height, pattern)
-# room_tiles = pattern.tiles
+room_tiles = FrenchPattern.arrange(pattern, room_width, room_height)
 
 # Calculate the distances between the tiles in the room
-Tiles.distances(room_tiles)
 # Print only the gaps that are outside the given range
-|> Enum.filter(fn {dx, dy, _i, _} -> 
-  dx > 6 or dy > 6 or (dx > 0 and dx < 4) or (dy > 0 and dy < 4) end)
+# Tiles.distances(room_tiles) |> Tiles.filter(4, 6) # |> length()
+
+# ImageGrid.side_distances(room_tiles, ImageGrid.find_adjacent(room_tiles))
+
+```
+
+```elixir
+defmodule Color do
+  def new(pattern, x, y) do
+    new(pattern, 0xaa, x, y)
+  end  
+  def new(pattern, color, x, y) do
+    color + div(x, pattern.width) * 10 + div(y, pattern.height) * 10
+  end  
+end
+
 ```
 
 ## Display the tile pattern in the room
@@ -35,15 +53,46 @@ Tiles.distances(room_tiles)
 alias Vix.Vips.Image
 alias Vix.Vips.Operation
 
-floor = Image.build_image!(room_width, room_height, [0xaa,0xaa,0xaa])
+# floor = Image.build_image!(room_width, room_height, [0xaa,0xaa,0xaa])
+floor = Image.build_image!(room_width, room_height, [0xff,0xff,0xff])
 
 List.foldl(room_tiles, floor, fn tile, acc ->
-  Operation.composite2!(
-    acc, 
-    Image.build_image!(tile.width, tile.height, [Integer.mod(tile.x, 255), 0xE5, 0x99]), 
-    :VIPS_BLEND_MODE_OVER, 
-    x: tile.x, 
+  img = Image.build_image!(
+    tile.width,
+    tile.height,
+    [
+      Color.new(pattern, 0xaa, tile.x, tile.y),
+      Color.new(pattern, 0xaa, tile.x, tile.y),
+      Color.new(pattern, 0x99, tile.x, tile.y),
+    ])
+
+  # Create high-quality text overlay with anti-aliasing
+  {text, _} =
+    Operation.text!(
+      "#{tile.width}x#{tile.height}",
+      width: 400,
+      dpi: 300,         # High DPI ensures sharp text at any size
+      font: "IBM Mono",
+      rgba: true        # Alpha channel enables smooth blending
+    )
+  
+  # Position text precisely on the image
+  # The embed operation handles proper padding and positioning
+  positioned_text =
+    Operation.embed!(
+      text,
+      div(tile.width - Image.width(text), 2),    # X offset from left
+      div(tile.height - Image.height(text), 2),  # Y offset from top
+      Image.width(img),
+      Image.height(img)
+    )
+
+  # Blend using alpha composition for professional results
+  composite = Operation.composite2!(img, positioned_text, :VIPS_BLEND_MODE_OVER)
+
+  Operation.composite2!(acc, composite, :VIPS_BLEND_MODE_OVER,
+    x: tile.x,
     y: tile.y)
-  end)
+end)
 
 ```

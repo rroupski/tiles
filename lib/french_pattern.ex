@@ -8,28 +8,66 @@ defmodule FrenchPattern do
   "cells" within the tile. Each cell is specified with relative offsets inside the tile
   where an image is placed.
   """
-  def new() do
-    tiles = [
-      Tile.new(2, 0, 406, 406),
-      Tile.new(0, 410, 203, 406),
-      Tile.new(207, 410, 203, 203),
-      Tile.new(207, 619, 406, 406),
-      Tile.new(207, 1029, 203, 203),
-      Tile.new(414, 207, 406, 406),
-      Tile.new(416, 1031, 610, 406),
-      Tile.new(619, 617, 203, 203),
-      Tile.new(619, 824, 406, 203),
-      Tile.new(826, 209, 406, 610),
-      Tile.new(1031, 2, 203, 203),
-      Tile.new(1031, 825, 406, 406)
-    ]
 
+  @s203 203
+  @s406 406
+  @s610 610
+
+  @doc """
+  Creates a new pattern using 4 mm spacer.
+  """
+  def new4() do
+    new_x(4) |> new()
+  end
+
+  @doc """
+  Creates a new pattern using 5 mm spacer.
+  """
+  def new5() do
+    new_x(5) |> new()
+  end
+
+  @doc """
+  Creates a new pattern using 6 mm spacer.
+  """
+  def new6() do
+    new_x(6) |> new()
+  end
+
+  @doc """
+  Creates a new pattern using 8 mm spacer.
+  """
+  def new8() do
+    new_x(8) |> new()
+  end
+
+  def new_x(spacer \\ 4) do
+    dx = div(spacer, 2)
+    dy = div(spacer, 2)
+
+    [
+      Tile.new(dx, 0, @s406, @s406),
+      Tile.new(0 * @s203 + 0 * spacer, 2 * @s203 + 1 * spacer + dy, @s203, @s406),
+      Tile.new(1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer, @s203, @s203),
+      Tile.new(1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy, @s406, @s406),
+      Tile.new(1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy, @s203, @s203),
+      Tile.new(2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer, @s406, @s406),
+      Tile.new(2 * @s203 + 2 * spacer + dx, 5 * @s203 + 4 * spacer, @s610, @s406),
+      Tile.new(3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer, @s203, @s203),
+      Tile.new(3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer, @s406, @s203),
+      Tile.new(4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy, @s406, @s610),
+      Tile.new(5 * @s203 + 4 * spacer, 0, @s203, @s203),
+      Tile.new(5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer, @s406, @s406)
+    ]
+  end
+
+  def new(tiles) do
     {width, height} = Tiles.dimensions(tiles)
     {min_width, min_height} = Tiles.min(tiles)
 
     %{
-      width: width - min_width,
-      height: height - min_height,
+      width: width - min_width + 2,
+      height: height - min_height + 2,
       tiles: tiles
     }
   end
@@ -40,16 +78,16 @@ defmodule FrenchPattern do
   back to the first image to ensure that every cell is populated.
 
   ## Parameters:
+  - pattern: A map defining the repeating pattern. It must include:
+       :width, :height, and :tiles (a list of %{Tile} with :width, :height, :x, and :y).
     - width: The width of the room.
     - height: The height of the room.
-    - pattern: A map defining the repeating pattern. It must include:
-         :width, :height, and :tiles (a list of %{Tile} with :width, :height, :x, and :y).
 
   ## Returns:
     - placements where:
          - placements: A list of %{Tile}
   """
-  def arrange(width, height, pattern) do
+  def arrange(pattern, width, height) do
     # Determine how many patterns (based on the pattern dimensions) can fit
     tile_cols = div(width, pattern.width)
     tile_rows = div(height, pattern.height)
