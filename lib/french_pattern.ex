@@ -14,6 +14,13 @@ defmodule FrenchPattern do
   @s610 610
 
   @doc """
+  Creates a new pattern using no spacer.
+  """
+  def new0() do
+    new_x(0) |> new()
+  end
+
+  @doc """
   Creates a new pattern using 4 mm spacer.
   """
   def new4() do
@@ -52,16 +59,16 @@ defmodule FrenchPattern do
       Tile.new(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy, @s406, @s406),
       Tile.new(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy, @s203, @s203),
       Tile.new(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer, @s406, @s406),
-      Tile.new(6, 2 * @s203 + 2 * spacer + dx, 5 * @s203 + 4 * spacer, @s610, @s406),
+      Tile.new(6, 2 * @s203 + 2 * spacer + dx - 1, 5 * @s203 + 4 * spacer, @s610, @s406),
       Tile.new(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer, @s203, @s203),
       Tile.new(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer, @s406, @s203),
-      Tile.new(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy, @s406, @s610),
+      Tile.new(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy - 1, @s406, @s610),
       Tile.new(10, 5 * @s203 + 4 * spacer, 0, @s203, @s203),
       Tile.new(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer, @s406, @s406)
     ]
   end
 
-  def new(tiles) do
+  def new_ex(tiles) do
     {width, height} = Tiles.dimensions(tiles)
     {min_width, min_height} = Tiles.min(tiles)
 
@@ -72,8 +79,18 @@ defmodule FrenchPattern do
     }
   end
 
+  def new(tiles) do
+    {width, height} = Tiles.dimensions(tiles)
+
+    %{
+      width: width,
+      height: height,
+      tiles: tiles
+    }
+  end
+
   @doc """
-  Arranges tiles in a repeating pattern over a rectangular room. If there
+  Arranges tiles in a repeating pattern over a rectangular area. If there
   are not enough tiles to fill all available pattern cells, the algorithm cycles
   back to the first image to ensure that every cell is populated.
 

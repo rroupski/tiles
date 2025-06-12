@@ -14,8 +14,8 @@ defmodule Tiles do
   within @tolerance pixels (or exactly touching) **and** on the
   other axis they overlap.
   """
-  @spec find_adjacent([Tile.t()], non_neg_integer()) :: %{integer() => [integer()]}
-  def find_adjacent(tiles, tolerance \\ @tolerance) when is_list(tiles) when is_list(tiles) do
+  @spec find_adjacent([Tile.t()], non_neg_integer()) :: [{integer(), [integer()]}]
+  def find_adjacent(tiles, tolerance \\ @tolerance) when is_list(tiles) do
     tiles_with_idx = Enum.with_index(tiles)
 
     Enum.map(tiles_with_idx, fn {img, i} ->

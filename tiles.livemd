@@ -2,33 +2,14 @@
 
 ```elixir
 Mix.install([
-  {:kino, "~> 0.7"},  # For interactive examples
   {:vix, "~> 0.5"},
+  {:kino, "~> 0.7"},  # For interactive examples  
   {:tiles, path: ".", env: :dev}
 ])
 
 ```
 
-## Create the tile pattern and a room
-
-```elixir
-# The room size in mm
-room_width = 3340
-room_height = 3500
-
-pattern = FrenchPattern.new4()
-
-# room_width =  pattern.width
-# room_height = pattern.height
-
-# Generate the tiles for a given room
-room_tiles = FrenchPattern.arrange(pattern, room_width, room_height)
-
-# Calculate the distances between the tiles in the room
-# Print only the gaps that are outside the given range
-Tiles.distances(room_tiles) |> Tiles.filter(4, 6) # |> length()
-
-```
+## Display the tile pattern in the room
 
 ```elixir
 defmodule Color do
@@ -42,11 +23,36 @@ end
 
 ```
 
-## Display the tile pattern in the room
-
 ```elixir
 alias Vix.Vips.Image
 alias Vix.Vips.Operation
+
+# The room size in mm
+room_name = "kitchen"
+room_width  = 3340
+room_height = 3500
+
+# Service room
+# room_name = "service"
+# room_width  = 1580
+# room_height = 2980
+
+# Living room
+# room_name = "living"
+# room_width  = 10520
+# room_height =  3950
+
+pattern = FrenchPattern.new_x(3) |> FrenchPattern.new_ex()
+
+# The size of the pattern
+# %Tile{width: room_width, height: room_height} = Tiles.bounding_box(pattern.tiles)
+
+# Generate the tiles for a given room
+room_tiles = FrenchPattern.arrange(pattern, room_width, room_height)
+
+# Calculate the distances between the tiles in the room
+# Print only the gaps that are outside the given range
+# Tiles.distances(room_tiles) |> Tiles.filter(3, 5)
 
 # floor = Image.build_image!(room_width, room_height, [0xaa,0xaa,0xaa])
 floor = Image.build_image!(room_width, room_height, [0xff,0xff,0xff])
@@ -56,9 +62,9 @@ List.foldl(room_tiles, floor, fn tile, acc ->
     tile.width,
     tile.height,
     [
-      Color.new(pattern, 0xaa, tile.x, tile.y),
-      Color.new(pattern, 0xaa, tile.x, tile.y),
-      Color.new(pattern, 0x99, tile.x, tile.y),
+      127 + Integer.mod(tile.i + Color.new(pattern, 0xaa, tile.x, tile.y), 127),
+      127 + Integer.mod(tile.i + Color.new(pattern, 0xaa, tile.x, tile.y), 127),
+      127 + Integer.mod(tile.i + Color.new(pattern, 0x99, tile.x, tile.y), 127),
     ])
 
   # Create high-quality text overlay with anti-aliasing
@@ -86,8 +92,11 @@ List.foldl(room_tiles, floor, fn tile, acc ->
   composite = Operation.composite2!(img, positioned_text, :VIPS_BLEND_MODE_OVER)
 
   Operation.composite2!(acc, composite, :VIPS_BLEND_MODE_OVER,
-    x: tile.x,
-    y: tile.y)
+    x: tile.x - 203,
+    y: tile.y - 203)
 end)
+
+# |> Operation.resize!(0.1)
+# |> Image.write_to_file(room_name <> ".jpg", Q: 85)
 
 ```
