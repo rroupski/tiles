@@ -122,10 +122,6 @@ defmodule FrenchPattern do
         %{x: pos_x, y: pos_y}
       end
 
-    IO.puts(
-      "Distinct tiles: #{length(pattern.tiles)}, available tiles: #{length(available_tiles)}."
-    )
-
     if length(pattern.tiles) < length(available_tiles) do
       # Not enough distinct tiles: cycle through the images to fill every cell.
       Enum.zip(available_tiles, Stream.cycle(pattern.tiles))

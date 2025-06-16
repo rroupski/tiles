@@ -50,6 +50,15 @@ defmodule Tiles do
     |> Enum.into([])
   end
 
+  def distances_ex(tiles, tolerance \\ @tolerance) do
+    adjacency = find_adjacent(tiles, tolerance)
+
+    tiles
+    |> side_distance(adjacency)
+    |> Stream.zip_with(adjacency, fn d, {i, _a} -> {i, d} end)
+    |> Enum.into(Map.new())
+  end
+
   @doc """
   Calculates dimensions of the area covered by a list of tiles (rectangles).
   """
@@ -155,6 +164,35 @@ defmodule Tiles do
         end
 
       {i, distances}
+    end)
+  end
+
+  defp side_distance(tiles, adjacency) do
+    # normalize to a tuple so we can do O(1) lookups by index
+    tuples = tiles |> List.to_tuple()
+
+    # build index => list of [dx, dy] pairs
+    Stream.map(adjacency, fn {i, neighbors} ->
+      a = elem(tuples, i)
+
+      for j <- neighbors do
+        b = elem(tuples, j)
+
+        cond do
+          a.x + a.width < b.x ->
+            b.x - (a.x + a.width)
+
+          b.x + b.width < a.x ->
+            a.x - (b.x + b.width)
+
+          true ->
+            cond do
+              a.y + a.height < b.y -> b.y - (a.y + a.height)
+              b.y + b.height < a.y -> a.y - (b.y + b.height)
+              true -> 0
+            end
+        end
+      end
     end)
   end
 

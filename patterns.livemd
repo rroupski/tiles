@@ -25,28 +25,20 @@ end
 
 ```elixir
 # The room size in mm
-room_name = "kitchen"
-room_width  = 3340
-room_height = 3360
-
-# Service room
-# room_name = "service"
-# room_width  = 1580
-# room_height = 2980
-
-# Living room
-# room_name = "living"
-# room_width  = div(7180, 2)
-# room_height = 3950
+room_width  = 3400
+room_height = 3600
 
 # Generate the tiles for a given room
 pattern = FrenchPattern.new_x(3) |> FrenchPattern.new_ex()
+
+# The size of the pattern
+# %Tile{width: room_width, height: room_height} = Tiles.bounding_box(pattern.tiles)
 
 room_tiles = FrenchPattern.arrange(pattern, room_width, room_height)
 
 # Calculate the distances between the tiles in the room
 # Print only the gaps that are outside the given range
-Tiles.distances(room_tiles) |> Tiles.filter(3, 3)
+distances = Tiles.distances_ex(room_tiles) # |> Tiles.filter(3, 5)
 
 ```
 
@@ -68,12 +60,15 @@ List.foldl(room_tiles, floor, fn tile, acc ->
     ])
 
   # Create high-quality text overlay with anti-aliasing
+  adjacency = inspect(Map.get(distances, tile.i))
+  list = String.slice(adjacency, 1, String.length(adjacency) - 2)
   {text, _} =
     Operation.text!(
-      "#{tile.i}\n#{tile.width}x#{tile.height}",
+      # "#{tile.i}\n#{tile.width}x#{tile.height}\n#{tile.x}:#{tile.y}",
+      "#{tile.i}\n#{tile.width}x#{tile.height}\n#{list}",
       width: 400,
-      dpi: 300,         # High DPI ensures sharp text at any size
-      font: "IBM Mono",
+      dpi: 250,         # High DPI ensures sharp text at any size
+      font: "Lucida Console",
       rgba: true        # Alpha channel enables smooth blending
     )
   
@@ -92,11 +87,8 @@ List.foldl(room_tiles, floor, fn tile, acc ->
   composite = Operation.composite2!(img, positioned_text, :VIPS_BLEND_MODE_OVER)
 
   Operation.composite2!(acc, composite, :VIPS_BLEND_MODE_OVER,
-    x: tile.x - 203,
-    y: tile.y - 203)
+    x: tile.x,
+    y: tile.y)
 end)
-
-# |> Operation.resize!(0.1)
-# |> Image.write_to_file(room_name <> ".jpg", Q: 85)
 
 ```

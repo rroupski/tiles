@@ -51,8 +51,8 @@ defmodule Tile do
   end
 
   defimpl String.Chars, for: Tile do
-    def to_string(%Tile{x: x, y: y, width: width, height: height}) do
-      "[x: #{pad(x, 4)}, y: #{pad(y, 4)}, #{width}x#{height}]"
+    def to_string(%Tile{i: i, x: x, y: y, width: width, height: height}) do
+      "[#{pad(i, 4)} | x: #{pad(x, 4)}, y: #{pad(y, 4)}, #{width}x#{height}]"
     end
 
     defp pad(value, n) when is_integer(value) do
