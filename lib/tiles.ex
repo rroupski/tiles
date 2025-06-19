@@ -46,8 +46,11 @@ defmodule Tiles do
     tiles
     |> side_distances(adjacency)
     |> Stream.zip_with(adjacency, fn {i, d}, {_i, a} -> {i, Enum.zip(a, d)} end)
+    |> Stream.map(fn {i, d} ->
+      {i, Enum.filter(d, fn {id, _} -> id > i end)}
+    end)
     |> Stream.filter(fn {_i, d} -> d != [] end)
-    |> Enum.into([])
+    |> Enum.into(Map.new())
   end
 
   def distances_ex(tiles, tolerance \\ @tolerance) do
@@ -91,6 +94,62 @@ defmodule Tiles do
         }
       end
     )
+  end
+
+  @doc """
+  Arranges tiles in a repeating pattern over a rectangular area. If there
+  are not enough tiles to fill all available pattern cells, the algorithm cycles
+  back to the first image to ensure that every cell is populated.
+
+  ## Parameters:
+  - pattern: A map defining the repeating pattern. It must include:
+       :width, :height, and :tiles (a list of %{Tile} with :width, :height, :x, and :y).
+    - width: The width of the room.
+    - height: The height of the room.
+
+  ## Returns:
+    - placements where:
+         - placements: A list of %{Tile}
+  """
+  def arrange(pattern, width, height) do
+    # Determine how many patterns (based on the pattern dimensions) can fit
+    tile_cols = div(width, pattern.width)
+    tile_rows = div(height, pattern.height)
+
+    # Build a list of absolute tile positions within the room.
+    available_tiles =
+      for row <- 0..tile_rows,
+          col <- 0..tile_cols,
+          cell <- pattern.tiles do
+        pos_x = col * pattern.width + cell.x
+        pos_y = row * pattern.height + cell.y
+
+        %{x: pos_x, y: pos_y}
+      end
+
+    if length(pattern.tiles) < length(available_tiles) do
+      # Not enough distinct tiles: cycle through the images to fill every cell.
+      Enum.zip(available_tiles, Stream.cycle(pattern.tiles))
+      |> placements()
+    else
+      # There are enough tiles: assign each cell one image in order
+      Enum.zip(available_tiles, pattern.tiles)
+      |> placements()
+    end
+  end
+
+  defp placements(col) do
+    col
+    |> Enum.with_index()
+    |> Enum.map(fn {{cell, tile}, i} ->
+      %Tile{
+        i: i,
+        x: cell.x,
+        y: cell.y,
+        width: tile.width,
+        height: tile.height
+      }
+    end)
   end
 
   @doc """

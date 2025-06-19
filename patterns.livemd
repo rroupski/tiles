@@ -3,92 +3,16 @@
 ```elixir
 Mix.install([
   {:vix, "~> 0.5"},
-  {:kino, "~> 0.7"},  # For interactive examples  
+  {:kino, "~> 0.7"},  # For interactive examples
   {:tiles, path: ".", env: :dev}
 ])
 
 ```
 
-## Display the tile pattern in the room
+## Display the tiles in the room
 
 ```elixir
-defmodule Color do
-  def new(pattern, x, y) do
-    new(pattern, 0xaa, x, y)
-  end  
-  def new(pattern, color, x, y) do
-    color + div(x, pattern.width) * 10 + div(y, pattern.height) * 10
-  end  
-end
-
-```
-
-```elixir
-# The room size in mm
-room_width  = 3400
-room_height = 3600
-
-# Generate the tiles for a given room
-pattern = FrenchPattern.new_x(3) |> FrenchPattern.new_ex()
-
-# The size of the pattern
-# %Tile{width: room_width, height: room_height} = Tiles.bounding_box(pattern.tiles)
-
-room_tiles = FrenchPattern.arrange(pattern, room_width, room_height)
-
-# Calculate the distances between the tiles in the room
-# Print only the gaps that are outside the given range
-distances = Tiles.distances_ex(room_tiles) # |> Tiles.filter(3, 5)
-
-```
-
-```elixir
-alias Vix.Vips.Image
-alias Vix.Vips.Operation
-
-# floor = Image.build_image!(room_width, room_height, [0xaa,0xaa,0xaa])
-floor = Image.build_image!(room_width, room_height, [0xff,0xff,0xff])
-
-List.foldl(room_tiles, floor, fn tile, acc ->
-  img = Image.build_image!(
-    tile.width,
-    tile.height,
-    [
-      127 + Integer.mod(tile.i + Color.new(pattern, 0xaa, tile.x, tile.y), 127),
-      127 + Integer.mod(tile.i + Color.new(pattern, 0xaa, tile.x, tile.y), 127),
-      127 + Integer.mod(tile.i + Color.new(pattern, 0x99, tile.x, tile.y), 127),
-    ])
-
-  # Create high-quality text overlay with anti-aliasing
-  adjacency = inspect(Map.get(distances, tile.i))
-  list = String.slice(adjacency, 1, String.length(adjacency) - 2)
-  {text, _} =
-    Operation.text!(
-      # "#{tile.i}\n#{tile.width}x#{tile.height}\n#{tile.x}:#{tile.y}",
-      "#{tile.i}\n#{tile.width}x#{tile.height}\n#{list}",
-      width: 400,
-      dpi: 250,         # High DPI ensures sharp text at any size
-      font: "Lucida Console",
-      rgba: true        # Alpha channel enables smooth blending
-    )
-  
-  # Position text precisely on the image
-  # The embed operation handles proper padding and positioning
-  positioned_text =
-    Operation.embed!(
-      text,
-      div(tile.width - Image.width(text), 2),    # X offset from left
-      div(tile.height - Image.height(text), 2),  # Y offset from top
-      Image.width(img),
-      Image.height(img)
-    )
-
-  # Blend using alpha composition for professional results
-  composite = Operation.composite2!(img, positioned_text, :VIPS_BLEND_MODE_OVER)
-
-  Operation.composite2!(acc, composite, :VIPS_BLEND_MODE_OVER,
-    x: tile.x,
-    y: tile.y)
-end)
+# The room size is in mm
+Room.new!(3340, 3500)
 
 ```
