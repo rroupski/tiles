@@ -8,7 +8,7 @@ defmodule Room do
 
   @default_spacer 3
 
-  def new!(width, height, spacer \\ @default_spacer) do
+  def new!(width, height, spacer \\ @default_spacer, verbose \\ false) do
     pattern = FrenchPattern.new(spacer)
 
     tiles = Tiles.arrange(pattern, width, height)
@@ -22,7 +22,7 @@ defmodule Room do
     List.foldl(tiles, floor, fn tile, acc ->
       composite =
         Image.build_image!(tile.width, tile.height, tile_color(tile, pattern))
-        |> build_tile(tile, tuples, Map.get(distances, tile.i))
+        |> build_tile(tile, tuples, Map.get(distances, tile.i), verbose)
 
       Operation.composite2!(
         acc,
@@ -125,13 +125,13 @@ defmodule Room do
     }
   end
 
-  defp build_tile(img, tile, _tuples, nil) do
+  defp build_tile(img, tile, _tuples, nil, _verbose) do
     {i, m, x, y} = build_tile(img, tile)
 
     Operation.composite!(i, m, x: x, y: y)
   end
 
-  defp build_tile(img, tile, tuples, distances) do
+  defp build_tile(img, tile, tuples, distances, verbose) do
     {i, m, x, y} =
       Enum.reduce(distances, {[], [], [], []}, fn {id, [dx, dy]}, {i, m, x, y} = acc ->
         adj = elem(tuples, id)
@@ -179,12 +179,29 @@ defmodule Room do
         end
       end)
 
-    tile_text = embed_text(tile, "#{tile.i}\n#{tile.width}x#{tile.height}")
+    tile_text =
+      cond do
+        verbose == 0 ->
+          embed_text(tile, "#{tile.i}")
 
-    i = [img, tile_text | i]
-    m = [:VIPS_BLEND_MODE_OVER | m]
-    x = [div(tile.width - Image.width(tile_text), 2) | x]
-    y = [div(tile.height - Image.height(tile_text), 2) | y]
+        verbose == 1 ->
+          embed_text(tile, "#{tile.width}x#{tile.height}")
+
+        verbose == 2 ->
+          embed_text(tile, "#{tile.i}\n#{tile.width}x#{tile.height}")
+
+        true ->
+          nil
+      end
+
+    {i, m, x, y} =
+      if tile_text != nil do
+        {[img, tile_text | i], [:VIPS_BLEND_MODE_OVER | m],
+         [div(tile.width - Image.width(tile_text), 2) | x],
+         [div(tile.height - Image.height(tile_text), 2) | y]}
+      else
+        {[img | i], m, x, y}
+      end
 
     Operation.composite!(i, m, x: x, y: y)
   end
