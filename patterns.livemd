@@ -13,6 +13,6 @@ Mix.install([
 
 ```elixir
 # The room size is in mm
-Room.new!(3340, 3500)
+Room.new!(2435, 2435, 3, 1)
 
 ```

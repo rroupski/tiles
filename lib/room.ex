@@ -9,7 +9,7 @@ defmodule Room do
   @default_spacer 3
 
   def new!(width, height, spacer \\ @default_spacer, verbose \\ 2) do
-    pattern = FrenchPattern.new(spacer)
+    pattern = Tiles.new(spacer)
 
     tiles = Tiles.arrange(pattern, width, height)
     tuples = tiles |> List.to_tuple()
@@ -35,7 +35,7 @@ defmodule Room do
   end
 
   def new(width, height, spacer \\ @default_spacer) do
-    pattern = FrenchPattern.new(spacer)
+    pattern = Tiles.new(spacer)
 
     tiles = Tiles.arrange(pattern, width, height)
 
@@ -181,6 +181,9 @@ defmodule Room do
 
     tile_text =
       cond do
+        verbose == 0 ->
+          embed_text(tile, "#{tile.i}")
+
         verbose == 1 ->
           embed_text(tile, "#{tile.i}")
 
