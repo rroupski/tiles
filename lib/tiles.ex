@@ -31,18 +31,18 @@ defmodule Tiles do
     dy = div(spacer, 2)
 
     [
-      Tile.new(0, dx, 0, @s406, @s406),
-      Tile.new(1, 0 * @s203 + 0 * spacer, 2 * @s203 + 1 * spacer + dy, @s203, @s406),
-      Tile.new(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer, @s203, @s203),
-      Tile.new(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy, @s406, @s406),
-      Tile.new(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy, @s203, @s203),
-      Tile.new(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer, @s406, @s406),
-      Tile.new(6, 2 * @s203 + 2 * spacer + dx - 1, 5 * @s203 + 4 * spacer, @s610, @s406),
-      Tile.new(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer, @s203, @s203),
-      Tile.new(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer, @s406, @s203),
-      Tile.new(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy - 1, @s406, @s610),
-      Tile.new(10, 5 * @s203 + 4 * spacer, 0, @s203, @s203),
-      Tile.new(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer, @s406, @s406)
+      new406x406(0, dx, 0),
+      new203x406(1, 0 * @s203 + 0 * spacer, 2 * @s203 + 1 * spacer + dy),
+      new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer),
+      new406x406(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy),
+      new203x203(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy),
+      new406x406(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer),
+      new610x406(6, 2 * @s203 + 2 * spacer + dx - 1, 5 * @s203 + 4 * spacer),
+      new203x203(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer),
+      new406x203(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer),
+      new406x610(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy - 1),
+      new203x203(10, 5 * @s203 + 4 * spacer, 0),
+      new406x406(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer)
     ]
   end
 
@@ -127,7 +127,7 @@ defmodule Tiles do
     Enum.reduce(
       tiles,
       {nil, nil},
-      fn %Tile{x: _, y: _, width: w, height: h}, {min_width, min_height} ->
+      fn %Tile{width: w, height: h}, {min_width, min_height} ->
         {
           min_not_nil(min_width, w),
           min_not_nil(min_height, h)
@@ -178,6 +178,30 @@ defmodule Tiles do
     end
   end
 
+  defp new203x203(i, x, y) do
+    Tile.new(1, i, x, y, @s203, @s203)
+  end
+
+  defp new406x406(i, x, y) do
+    Tile.new(2, i, x, y, @s406, @s406)
+  end
+
+  defp new203x406(i, x, y) do
+    Tile.new(3, i, x, y, @s203, @s406)
+  end
+
+  defp new406x203(i, x, y) do
+    Tile.new(3, i, x, y, @s406, @s203)
+  end
+
+  defp new406x610(i, x, y) do
+    Tile.new(4, i, x, y, @s406, @s610)
+  end
+
+  defp new610x406(i, x, y) do
+    Tile.new(4, i, x, y, @s610, @s406)
+  end
+
   defp wrap(tiles) do
     {width, height} = Tiles.dimensions(tiles)
     {min_width, min_height} = Tiles.min(tiles)
@@ -193,13 +217,7 @@ defmodule Tiles do
     col
     |> Enum.with_index()
     |> Enum.map(fn {{cell, tile}, i} ->
-      %Tile{
-        i: i,
-        x: cell.x,
-        y: cell.y,
-        width: tile.width,
-        height: tile.height
-      }
+      Tile.new(tile.id, i, cell.x, cell.y, tile.width, tile.height)
     end)
   end
 

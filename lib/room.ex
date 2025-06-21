@@ -8,7 +8,7 @@ defmodule Room do
 
   @default_spacer 3
 
-  def new!(width, height, spacer \\ @default_spacer, verbose \\ 2) do
+  def new!(width, height, spacer \\ @default_spacer, verbose \\ 0) do
     pattern = Tiles.new(spacer)
 
     tiles = Tiles.arrange(pattern, width, height)
@@ -114,8 +114,8 @@ defmodule Room do
     )
   end
 
-  defp build_tile(img, tile) do
-    tile_text = tile_title(tile)
+  defp build_tile(img, tile, verbose) do
+    tile_text = text(tile, verbose)
 
     {
       [img, tile_text],
@@ -125,8 +125,8 @@ defmodule Room do
     }
   end
 
-  defp build_tile(img, tile, _tuples, nil, _verbose) do
-    {i, m, x, y} = build_tile(img, tile)
+  defp build_tile(img, tile, _tuples, nil, verbose) do
+    {i, m, x, y} = build_tile(img, tile, verbose)
 
     Operation.composite!(i, m, x: x, y: y)
   end
@@ -182,7 +182,7 @@ defmodule Room do
     tile_text =
       cond do
         verbose == 0 ->
-          embed_text(tile, "#{tile.i}")
+          embed_text(tile, "#{tile.id}")
 
         verbose == 1 ->
           embed_text(tile, "#{tile.i}")
@@ -210,6 +210,28 @@ defmodule Room do
       end
 
     Operation.composite!(i, m, x: x, y: y)
+  end
+
+  defp text(tile, verbose) do
+    cond do
+      verbose == 0 ->
+        embed_text(tile, "#{tile.id}")
+
+      verbose == 1 ->
+        embed_text(tile, "#{tile.i}")
+
+      verbose == 2 ->
+        embed_text(tile, "#{tile.width}x#{tile.height}")
+
+      verbose == 3 ->
+        embed_text(tile, "#{tile.i}\n#{tile.width}x#{tile.height}")
+
+      verbose == 4 ->
+        embed_text(tile, "#{tile.i}\n#{tile.width}x#{tile.height}\n[#{tile.x},#{tile.y}]")
+
+      true ->
+        nil
+    end
   end
 
   # Find the middle of the overlapping section of two horizontal line segments
