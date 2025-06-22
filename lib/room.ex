@@ -73,11 +73,7 @@ defmodule Room do
   end
 
   defp tile_color(tile, pattern) do
-    [
-      127 + Integer.mod(tile.i + Color.new(pattern, 0xAA, tile.x, tile.y), 127),
-      127 + Integer.mod(tile.i + Color.new(pattern, 0xAA, tile.x, tile.y), 127),
-      127 + Integer.mod(tile.i + Color.new(pattern, 0x99, tile.x, tile.y), 127)
-    ]
+    Color.new(tile, pattern)
   end
 
   defp embed_text(text) do
