@@ -135,14 +135,12 @@ defmodule Room do
         if dx > 0 do
           xx =
             if adj.x > tile.x do
-              tile.width - 32
+              tile.width - 20
             else
               2
             end
 
           yy = middle_y(tile, adj)
-
-          # IO.puts("dx: #{tile.i} --> #{adj.i}: #{xx}x#{yy}")
 
           {
             [embed_text(Integer.to_string(dx)) | i],
@@ -156,12 +154,10 @@ defmodule Room do
 
             yy =
               if adj.y > tile.y do
-                tile.height - 32
+                tile.height - 25
               else
                 0
               end
-
-            # IO.puts("dy: #{tile.i} --> #{adj.i}: #{xx}x#{yy}")
 
             {
               [embed_text(Integer.to_string(dy)) | i],
