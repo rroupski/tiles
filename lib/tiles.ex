@@ -31,17 +31,17 @@ defmodule Tiles do
     dy = div(spacer, 2)
 
     [
-      new406x406(0, dx, 0),
-      new203x406(1, 0 * @s203 + 0 * spacer, 2 * @s203 + 1 * spacer + dy),
-      new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer),
+      new406x406(0, 0 * @s203 + dx, 0),
+      new203x406(1, 0 * @s203 + 0, 2 * @s203 + 1 * spacer + dy),
+      new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer + dy),
       new406x406(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy),
       new203x203(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy),
       new406x406(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer),
-      new610x406(6, 2 * @s203 + 2 * spacer + dx - 1, 5 * @s203 + 4 * spacer),
+      new610x406(6, 2 * @s203 + 2 * spacer, 5 * @s203 + 4 * spacer),
       new203x203(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer),
       new406x203(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer),
-      new406x610(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + dy - 1),
-      new203x203(10, 5 * @s203 + 4 * spacer, 0),
+      new406x610(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer),
+      new203x203(10, 5 * @s203 + 3 * spacer + dx, 0),
       new406x406(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer)
     ]
   end
