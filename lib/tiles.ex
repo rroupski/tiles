@@ -157,7 +157,7 @@ defmodule Tiles do
     tile_rows = div(height, pattern.height)
 
     # Build a list of absolute tile positions within the room.
-    available_tiles =
+    tiles =
       for row <- 0..tile_rows,
           col <- 0..tile_cols,
           cell <- pattern.tiles do
@@ -167,15 +167,7 @@ defmodule Tiles do
         %{x: pos_x, y: pos_y}
       end
 
-    if length(pattern.tiles) < length(available_tiles) do
-      # Not enough distinct tiles: cycle through the images to fill every cell.
-      Enum.zip(available_tiles, Stream.cycle(pattern.tiles))
-      |> placements()
-    else
-      # There are enough tiles: assign each cell one image in order
-      Enum.zip(available_tiles, pattern.tiles)
-      |> placements()
-    end
+    Enum.zip(tiles, Stream.cycle(pattern.tiles)) |> placements()
   end
 
   defp new203x203(i, x, y) do
