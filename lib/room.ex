@@ -9,18 +9,30 @@ defmodule Room do
   def new!(width, height, options \\ []) do
     spacer = Keyword.get(options, :spacer, 3)
     verbose = Keyword.get(options, :verbose, 2)
+    truncate = Keyword.get(options, :truncate, false)
+
     offset = Keyword.get(options, :offset, 0)
+    offset_x = Keyword.get(options, :offset_x, offset)
+    offset_y = Keyword.get(options, :offset_y, offset)
 
     pattern = Tiles.new(spacer)
 
-    tiles = Tiles.arrange(pattern, width, height)
-
-    tuples = tiles |> List.to_tuple()
+    tiles = Tiles.arrange(pattern, width, height, truncate)
 
     # Calculate the distances between the tiles in the room
     distances = Tiles.distances(tiles)
 
+    {width, height} =
+      if truncate do
+        {width, height}
+      else
+        box = Tiles.bounding_box(tiles)
+        {box.width - offset_x, box.height - offset_y}
+      end
+
     floor = Image.build_image!(width, height, @background_color)
+
+    tuples = tiles |> List.to_tuple()
 
     List.foldl(tiles, floor, fn tile, acc ->
       composite =
@@ -31,8 +43,8 @@ defmodule Room do
         acc,
         composite,
         :VIPS_BLEND_MODE_OVER,
-        x: tile.x - offset,
-        y: tile.y - offset
+        x: tile.x - offset_x,
+        y: tile.y - offset_y
       )
     end)
   end

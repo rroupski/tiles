@@ -163,15 +163,18 @@ defmodule Tiles do
        :width, :height, and :tiles (a list of %{Tile} with :width, :height, :x, and :y).
     - width: The width of the room.
     - height: The height of the room.
+    - adjustment: The adjustment to be applied to the tile row and column numbers.
 
   ## Returns:
     - placements where:
          - placements: A list of %{Tile}
   """
-  def arrange(pattern, width, height) do
+  def arrange(pattern, width, height, truncate \\ false) do
+    adjustment = if truncate, do: 0, else: -1
+
     # Determine how many patterns (based on the pattern dimensions) can fit
-    tile_cols = div(width, pattern.width)
-    tile_rows = div(height, pattern.height)
+    tile_cols = div(width, pattern.width) + adjustment
+    tile_rows = div(height, pattern.height) + adjustment
 
     # Build a list of absolute tile positions within the room.
     tiles =
