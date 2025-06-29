@@ -6,12 +6,15 @@ defmodule Room do
   @text_font "Lucida Console"
   @background_color [0xFF, 0xFF, 0xFF]
 
-  @default_spacer 3
+  def new!(width, height, options \\ []) do
+    spacer = Keyword.get(options, :spacer, 3)
+    verbose = Keyword.get(options, :verbose, 2)
+    offset = Keyword.get(options, :offset, 0)
 
-  def new!(width, height, spacer \\ @default_spacer, verbose \\ 0) do
     pattern = Tiles.new(spacer)
 
     tiles = Tiles.arrange(pattern, width, height)
+
     tuples = tiles |> List.to_tuple()
 
     # Calculate the distances between the tiles in the room
@@ -21,59 +24,21 @@ defmodule Room do
 
     List.foldl(tiles, floor, fn tile, acc ->
       composite =
-        Image.build_image!(tile.width, tile.height, tile_color(tile, pattern))
+        Image.build_image!(tile.width, tile.height, tile_color(tile))
         |> build_tile(tile, tuples, Map.get(distances, tile.i), verbose)
 
       Operation.composite2!(
         acc,
         composite,
         :VIPS_BLEND_MODE_OVER,
-        x: tile.x,
-        y: tile.y
+        x: tile.x - offset,
+        y: tile.y - offset
       )
     end)
   end
 
-  def new(width, height, spacer \\ @default_spacer) do
-    pattern = Tiles.new(spacer)
-
-    tiles = Tiles.arrange(pattern, width, height)
-
-    # Calculate the distances between the tiles in the room
-    distances = Tiles.distances_ex(tiles)
-
-    floor = Image.build_image!(width, height, [0xFF, 0xFF, 0xFF])
-
-    List.foldl(tiles, floor, fn tile, acc ->
-      img = Image.build_image!(tile.width, tile.height, tile_color(tile, pattern))
-
-      tile_text = tile_title(tile)
-
-      adjacency = inspect(Map.get(distances, tile.i))
-      list = String.slice(adjacency, 1, String.length(adjacency) - 2)
-      number_text = embed_text("#{list}")
-
-      composite =
-        Operation.composite!(
-          [img, tile_text, number_text],
-          [:VIPS_BLEND_MODE_OVER, :VIPS_BLEND_MODE_OVER],
-          x: [0, 0],
-          y: [0, 0]
-        )
-
-      Operation.composite2!(acc, composite, :VIPS_BLEND_MODE_OVER,
-        x: tile.x,
-        y: tile.y
-      )
-    end)
-  end
-
-  defp tile_title(tile) do
-    embed_text(tile, "#{tile.i}\n#{tile.width}x#{tile.height}")
-  end
-
-  defp tile_color(tile, pattern) do
-    Color.new(tile, pattern)
+  defp tile_color(tile) do
+    Color.new(tile)
   end
 
   defp embed_text(text) do

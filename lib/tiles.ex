@@ -31,7 +31,7 @@ defmodule Tiles do
     dy = div(spacer, 2)
 
     [
-      new406x406(0, 0 * @s203 + dx, 0),
+      new406x406(0, 1, 0),
       new203x406(1, 0 * @s203 + 0, 2 * @s203 + 1 * spacer + dy),
       new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer + dy),
       new406x406(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy),
@@ -207,14 +207,21 @@ defmodule Tiles do
     {min_width, min_height} = Tiles.min(tiles)
 
     %{
-      width: width - min_width + 2,
-      height: height - min_height + 2,
+      width: width - min_width + 1,
+      height: height - min_height + 1,
       tiles: tiles
     }
   end
 
   defp placements(col) do
     col
+    |> Enum.map(fn {coor, tile} ->
+      if coor.x == 1 do
+        {%{x: coor.x + 2, y: coor.y}, tile}
+      else
+        {coor, tile}
+      end
+    end)
     |> Enum.with_index()
     |> Enum.map(fn {{cell, tile}, i} ->
       Tile.new(tile.id, i, cell.x, cell.y, tile.width, tile.height)
