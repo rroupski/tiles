@@ -18,18 +18,24 @@ defmodule Tile do
         }
 
   @doc """
-  Creates a new tile, enforcing non-negative width and height.
+  Creates a new tile at the given x and y.
   """
   @spec new(integer(), integer(), non_neg_integer(), non_neg_integer()) :: t()
   def new(x, y, width, height) do
     new(-1, x, y, width, height)
   end
 
+  @doc """
+  Creates a new tile at the given x and y.
+  """
   @spec new(integer(), integer(), integer(), non_neg_integer(), non_neg_integer()) :: t()
   def new(i, x, y, width, height) do
     new(0, i, x, y, width, height)
   end
 
+  @doc """
+  Creates a new tile, enforcing non-negative width and height.
+  """
   @spec new(
           non_neg_integer(),
           integer(),
@@ -63,23 +69,10 @@ defmodule Tile do
       "[#{pad(i, 4)} | #{id}: [#{pad(x, 4)}, #{pad(y, 4)}] #{width}x#{height}]"
     end
 
-    defp pad(value, n) when is_integer(value) do
+    defp pad(value, n) do
       value
       |> Integer.to_string()
       |> String.pad_leading(n)
     end
-
-    defp pad(value, n) when is_float(value) do
-      value
-      |> format_float()
-      |> String.pad_leading(n)
-    end
-
-    defp pad(value, _n) do
-      raise ArgumentError, "pad/2 expects a number, got: #{inspect(value)}"
-    end
-
-    defp format_float(value) when value == trunc(value), do: Integer.to_string(trunc(value))
-    defp format_float(value), do: :erlang.float_to_binary(value, decimals: 2)
   end
 end
