@@ -14,7 +14,7 @@ defmodule Tiles do
   Creates a new pattern using a spacer.
   """
   def new(spacer \\ 3) do
-    pattern(spacer) |> wrap(spacer)
+    pattern(spacer) |> wrap()
   end
 
   @doc """
@@ -30,37 +30,20 @@ defmodule Tiles do
     dx = div(spacer, 2)
     dy = div(spacer, 2)
 
-    if spacer > 3 do
-      [
-        new406x406(0, dx, 1),
-        new203x406(1, 0 * @s203 + 0, 2 * @s203 + 1 * spacer + dy),
-        new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer + dy),
-        new406x406(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy),
-        new203x203(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy),
-        new406x406(5, 2 * @s203 + 2 * spacer + 1, 1 * @s203 + 1 * spacer),
-        new610x406(6, 2 * @s203 + 2 * spacer + 1, 5 * @s203 + 4 * spacer),
-        new203x203(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer),
-        new406x203(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer),
-        new406x610(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer + 1),
-        new203x203(10, 5 * @s203 + 3 * spacer + dx, 0),
-        new406x406(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer)
-      ]
-    else
-      [
-        new406x406(0, 1, 0),
-        new203x406(1, 0 * @s203 + 0, 2 * @s203 + 1 * spacer + dy),
-        new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer + dy),
-        new406x406(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy),
-        new203x203(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy),
-        new406x406(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer),
-        new610x406(6, 2 * @s203 + 2 * spacer, 5 * @s203 + 4 * spacer),
-        new203x203(7, 3 * @s203 + 2 * spacer + dx, 3 * @s203 + 2 * spacer),
-        new406x203(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer),
-        new406x610(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer),
-        new203x203(10, 5 * @s203 + 3 * spacer + dx, 0),
-        new406x406(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer)
-      ]
-    end
+    [
+      new406x406(0, dx, dy),
+      new203x406(1, 0, 2 * @s203 + 1 * spacer + dy),
+      new203x203(2, 1 * @s203 + 1 * spacer, 2 * @s203 + 1 * spacer + dy),
+      new406x406(3, 1 * @s203 + 1 * spacer, 3 * @s203 + 2 * spacer + dy),
+      new203x203(4, 1 * @s203 + 1 * spacer, 5 * @s203 + 3 * spacer + dy),
+      new406x406(5, 2 * @s203 + 2 * spacer, 1 * @s203 + 1 * spacer),
+      new610x406(6, 2 * @s203 + 2 * spacer, 5 * @s203 + 4 * spacer),
+      new203x203(7, 3 * @s203 + 2 * spacer, 3 * @s203 + 2 * spacer),
+      new406x203(8, 3 * @s203 + 2 * spacer + dx, 4 * @s203 + 3 * spacer),
+      new406x610(9, 4 * @s203 + 3 * spacer + dx, 1 * @s203 + spacer),
+      new203x203(10, 5 * @s203 + 3 * spacer + dx, 0),
+      new406x406(11, 5 * @s203 + 4 * spacer, 4 * @s203 + 3 * spacer)
+    ]
   end
 
   @doc """
@@ -214,34 +197,19 @@ defmodule Tiles do
     Tile.new(4, i, x, y, @s610, @s406)
   end
 
-  defp wrap(tiles, spacer) do
+  defp wrap(tiles) do
     {width, height} = Tiles.dimensions(tiles)
     {min_width, min_height} = Tiles.min(tiles)
 
-    if spacer > 3 do
-      %{
-        width: width - min_width + 2,
-        height: height - min_height + 1,
-        tiles: tiles
-      }
-    else
-      %{
-        width: width - min_width + 1,
-        height: height - min_height + 1,
-        tiles: tiles
-      }
-    end
+    %{
+      width: width - min_width + 1,
+      height: height - min_height + 1,
+      tiles: tiles
+    }
   end
 
   defp placements(col) do
     col
-    |> Enum.map(fn {coor, tile} ->
-      if coor.x == 1 or coor.x == 2 do
-        {%{x: coor.x + 2, y: coor.y}, tile}
-      else
-        {coor, tile}
-      end
-    end)
     |> Enum.with_index()
     |> Enum.map(fn {{cell, tile}, i} ->
       Tile.new(tile.id, i, cell.x, cell.y, tile.width, tile.height)
