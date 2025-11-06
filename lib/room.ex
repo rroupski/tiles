@@ -3,6 +3,7 @@ defmodule Room do
   alias Vix.Vips.Operation
 
   @text_dpi 200
+  @text_gap_dpi 400
   @text_font "IBM Plex Mono"
   @background_color [0xFF, 0xFF, 0xFF]
 
@@ -54,11 +55,11 @@ defmodule Room do
   end
 
   defp embed_text(text) do
-    # Create high-quality text overlay with anti-aliasing
+    # Tile gap text: Create high-quality text overlay with anti-aliasing
     {img, _} =
       Operation.text!(
         text,
-        dpi: @text_dpi,
+        dpi: @text_gap_dpi,
         font: @text_font,
         rgba: true
       )
@@ -67,7 +68,7 @@ defmodule Room do
   end
 
   defp embed_text(tile, s) do
-    # Create high-quality text overlay with anti-aliasing
+    # Tile title text: Create high-quality text overlay with anti-aliasing
     {text, _} =
       Operation.text!(
         s,
@@ -112,7 +113,7 @@ defmodule Room do
         if dx > 0 do
           xx =
             if adj.x > tile.x do
-              tile.width - 20
+              tile.width - 36
             else
               2
             end
@@ -131,9 +132,9 @@ defmodule Room do
 
             yy =
               if adj.y > tile.y do
-                tile.height - 25
+                tile.height - 50
               else
-                0
+                2
               end
 
             {
