@@ -3,7 +3,7 @@ defmodule Room do
   alias Vix.Vips.Operation
 
   @text_dpi 200
-  @text_font "Lucida Console"
+  @text_font "IBM Plex Mono"
   @background_color [0xFF, 0xFF, 0xFF]
 
   def new!(width, height, options \\ []) do
