@@ -2,9 +2,15 @@ defmodule Room do
   alias Vix.Vips.Image
   alias Vix.Vips.Operation
 
-  @text_dpi 200
-  @text_gap_dpi 400
-  @text_font "IBM Plex Mono"
+  # Tile description text size
+  @tile_text_dpi 200
+
+  # Tile gap width text size of offsets
+  @gap_text_dpi 400
+  @gap_text_x_offset 36
+  @gap_text_y_offset 50
+
+  @tile_text_font "IBM Plex Mono"
   @background_color [0xFF, 0xFF, 0xFF]
 
   def new!(width, height, options \\ []) do
@@ -59,8 +65,8 @@ defmodule Room do
     {img, _} =
       Operation.text!(
         text,
-        dpi: @text_gap_dpi,
-        font: @text_font,
+        dpi: @gap_text_dpi,
+        font: @tile_text_font,
         rgba: true
       )
 
@@ -72,8 +78,8 @@ defmodule Room do
     {text, _} =
       Operation.text!(
         s,
-        dpi: @text_dpi,
-        font: @text_font,
+        dpi: @tile_text_dpi,
+        font: @tile_text_font,
         rgba: true
       )
 
@@ -113,7 +119,7 @@ defmodule Room do
         if dx > 0 do
           xx =
             if adj.x > tile.x do
-              tile.width - 36
+              tile.width - @gap_text_x_offset
             else
               2
             end
@@ -132,7 +138,7 @@ defmodule Room do
 
             yy =
               if adj.y > tile.y do
-                tile.height - 50
+                tile.height - @gap_text_y_offset
               else
                 2
               end
