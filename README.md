@@ -1,8 +1,8 @@
-# Tiles
+# Tiles: French Versailles Pattern Layout
 
 <img src="french-pattern.png" width="400" alt="Example image">
 
-An Elixir library is specifically designed to layout axis-aligned tiles in the French Versailles pattern. This pattern employs four distinct tile sizes, such as 203x203, 406x406, 203x406, and 610x406 millimeters, arranged in a recurring pattern. The commonly utilized materials for this pattern include travertine, marble, limestone, and sandstone.
+An Elixir library is designed to layout axis-aligned tiles in the French Versailles pattern. This pattern employs four distinct tile sizes, such as 203x203, 406x406, 203x406, and 610x406 millimeters, arranged in a recurring pattern. The commonly utilized materials for this pattern include travertine, marble, limestone, and sandstone.
 
 ## Features
 
