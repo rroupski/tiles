@@ -69,9 +69,15 @@ defmodule Tile do
       "[#{pad(i, 4)} | #{id}: [#{pad(x, 4)}, #{pad(y, 4)}] #{width}x#{height}]"
     end
 
-    defp pad(value, n) do
+    defp pad(value, n) when is_integer(value) do
       value
       |> Integer.to_string()
+      |> String.pad_leading(n)
+    end
+
+    defp pad(value, n) when is_float(value) do
+      value
+      |> :erlang.float_to_binary(decimals: 2)
       |> String.pad_leading(n)
     end
   end

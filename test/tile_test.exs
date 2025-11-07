@@ -24,17 +24,17 @@ defmodule TileTest do
   describe "Tile string representation" do
     test "formats integer tile" do
       tile = Tile.new(1, 2, 10, 5)
-      assert to_string(tile) == "[x:    1, y:    2, 10x5]"
+      assert to_string(tile) == "[  -1 | 0: [   1,    2] 10x5]"
     end
 
     test "formats float tile" do
       tile = Tile.new(1.0, 2.25, 10, 5)
-      assert to_string(tile) == "[x:    1, y: 2.25, 10x5]"
+      assert to_string(tile) == "[  -1 | 0: [1.00, 2.25] 10x5]"
     end
 
     test "formats padded output consistently" do
       tile = Tile.new(99, 5.5, 10, 5)
-      assert to_string(tile) == "[x:   99, y: 5.50, 10x5]"
+      assert to_string(tile) == "[  -1 | 0: [  99, 5.50] 10x5]"
     end
   end
 
