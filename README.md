@@ -48,7 +48,7 @@ pattern = Tiles.new(3)
 # Arrange tiles in a 1500x1500mm room
 tiles = Tiles.arrange(pattern, 1500, 1500)
 
-# Calculate dimensions
+# Calculate the dimensions of the covered aria without cutting any tiles
 {width, height} = Tiles.dimensions(tiles)
 
 # Find adjacent tiles
@@ -157,8 +157,8 @@ iex -S mix
 
 The library uses a 12-cell repeating pattern designed for floor tiles:
 
-- **5 tile sizes**: 203×203, 406×406, 203×406, 406×610, 610×406 (mm)
-- **12 cells per pattern**: Strategically arranged for visual appeal
+- **4 tile sizes**: 203×203, 406×406, 203×406, 610×406 (mm)
+- **12 tiles per pattern**: Strategically arranged for visual appeal
 - **Seamless tiling**: Pattern repeats across any room size
 - **Automatic cycling**: Reuses tiles if fewer than needed
 
