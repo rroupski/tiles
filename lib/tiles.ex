@@ -161,8 +161,8 @@ defmodule Tiles do
 
     # Build a list of absolute tile positions within the room.
     tiles =
-      for row <- 0..tile_rows,
-          col <- 0..tile_cols,
+      for row <- 0..tile_rows//1,
+          col <- 0..tile_cols//1,
           cell <- pattern.tiles do
         pos_x = col * pattern.width + cell.x
         pos_y = row * pattern.height + cell.y
