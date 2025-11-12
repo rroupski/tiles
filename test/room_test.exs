@@ -75,7 +75,9 @@ defmodule RoomTest do
     end
 
     test "creates room with multiple options combined" do
-      image = Room.new!(1500, 1500, spacer: 5, verbose: 3, truncate: true, offset_x: 10, offset_y: 10)
+      image =
+        Room.new!(1500, 1500, spacer: 5, verbose: 3, truncate: true, offset_x: 10, offset_y: 10)
+
       assert %Image{} = image
     end
 

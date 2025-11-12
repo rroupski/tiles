@@ -1,4 +1,3 @@
-
 defmodule TileTest do
   use ExUnit.Case
   alias Tile

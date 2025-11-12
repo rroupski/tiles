@@ -51,7 +51,8 @@ defmodule TilesTest do
 
     test "calculates distances for adjacent tiles" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(8, 0, 5, 5)  # 3px gap horizontally
+      # 3px gap horizontally
+      b = Tile.new(8, 0, 5, 5)
       result = Tiles.distances([a, b])
       assert is_map(result)
       assert Map.has_key?(result, 0)
@@ -60,7 +61,8 @@ defmodule TilesTest do
 
     test "handles touching tiles" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(5, 0, 5, 5)  # touching
+      # touching
+      b = Tile.new(5, 0, 5, 5)
       result = Tiles.distances([a, b])
       assert is_map(result)
       assert [{1, [0, 0]}] = result[0]
@@ -68,7 +70,8 @@ defmodule TilesTest do
 
     test "respects custom tolerance" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(20, 0, 5, 5)  # 15px gap
+      # 15px gap
+      b = Tile.new(20, 0, 5, 5)
       result = Tiles.distances([a, b], 20)
       assert Map.has_key?(result, 0)
     end
@@ -77,14 +80,16 @@ defmodule TilesTest do
   describe "Tiles.find_adjacent/2" do
     test "identifies horizontally adjacent tiles" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(8, 0, 5, 5)  # 3px gap
+      # 3px gap
+      b = Tile.new(8, 0, 5, 5)
       result = Tiles.find_adjacent([a, b])
       assert [{0, [1]}, {1, [0]}] = result
     end
 
     test "identifies vertically adjacent tiles" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(0, 8, 5, 5)  # 3px gap below
+      # 3px gap below
+      b = Tile.new(0, 8, 5, 5)
       result = Tiles.find_adjacent([a, b])
       assert [{0, [1]}, {1, [0]}] = result
     end
@@ -107,10 +112,11 @@ defmodule TilesTest do
 
     test "respects custom tolerance" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(20, 0, 5, 5)  # 15px gap
+      # 15px gap
+      b = Tile.new(20, 0, 5, 5)
       result = Tiles.find_adjacent([a, b], 20)
       assert [{0, [1]}, {1, [0]}] = result
-      
+
       result_strict = Tiles.find_adjacent([a, b], 5)
       assert [{0, []}, {1, []}] = result_strict
     end
@@ -149,9 +155,10 @@ defmodule TilesTest do
 
     test "pattern tiles have correct dimensions" do
       pattern = Tiles.pattern(3)
+
       assert Enum.all?(pattern, fn tile ->
-        tile.width in [203, 406, 610] and tile.height in [203, 406, 610]
-      end)
+               tile.width in [203, 406, 610] and tile.height in [203, 406, 610]
+             end)
     end
 
     test "pattern with different spacer" do
@@ -159,8 +166,8 @@ defmodule TilesTest do
       assert length(pattern) == 12
       # Verify tiles exist and have non-negative coordinates
       assert Enum.all?(pattern, fn tile ->
-        tile.x >= 0 and tile.y >= 0
-      end)
+               tile.x >= 0 and tile.y >= 0
+             end)
     end
   end
 
@@ -214,7 +221,8 @@ defmodule TilesTest do
   describe "Tiles.distances_ex/2" do
     test "returns distances for all neighbors" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(8, 0, 5, 5)  # 3px gap horizontally
+      # 3px gap horizontally
+      b = Tile.new(8, 0, 5, 5)
       result = Tiles.distances_ex([a, b])
       assert is_map(result)
       assert Map.has_key?(result, 0)
@@ -223,14 +231,16 @@ defmodule TilesTest do
 
     test "respects custom tolerance" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(20, 0, 5, 5)  # 15px gap
+      # 15px gap
+      b = Tile.new(20, 0, 5, 5)
       result = Tiles.distances_ex([a, b], 20)
       assert is_map(result)
     end
 
     test "handles touching tiles" do
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(5, 0, 5, 5)  # touching
+      # touching
+      b = Tile.new(5, 0, 5, 5)
       result = Tiles.distances_ex([a, b])
       assert is_map(result)
     end
@@ -250,13 +260,15 @@ defmodule TilesTest do
       import ExUnit.CaptureIO
 
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(20, 0, 5, 5)  # 15px gap
+      # 15px gap
+      b = Tile.new(20, 0, 5, 5)
       tiles = [a, b]
       distances = Tiles.distances(tiles, 20)
 
-      output = capture_io(fn ->
-        Tiles.filter(distances, 4, 6)
-      end)
+      output =
+        capture_io(fn ->
+          Tiles.filter(distances, 4, 6)
+        end)
 
       # Should produce output for out-of-range distances
       assert is_binary(output)
@@ -266,13 +278,15 @@ defmodule TilesTest do
       import ExUnit.CaptureIO
 
       a = Tile.new(0, 0, 5, 5)
-      b = Tile.new(8, 0, 5, 5)  # 3px gap
+      # 3px gap
+      b = Tile.new(8, 0, 5, 5)
       tiles = [a, b]
       distances = Tiles.distances(tiles, 10)
 
-      output = capture_io(fn ->
-        Tiles.filter(distances, 5, 10)
-      end)
+      output =
+        capture_io(fn ->
+          Tiles.filter(distances, 5, 10)
+        end)
 
       assert is_binary(output)
     end
@@ -280,9 +294,10 @@ defmodule TilesTest do
     test "handles empty distance map" do
       import ExUnit.CaptureIO
 
-      output = capture_io(fn ->
-        Tiles.filter(%{}, 4, 6)
-      end)
+      output =
+        capture_io(fn ->
+          Tiles.filter(%{}, 4, 6)
+        end)
 
       assert output == ""
     end
