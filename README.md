@@ -48,7 +48,7 @@ pattern = Tiles.new(3)
 # Arrange tiles in a 1500x1500mm room
 tiles = Tiles.arrange(pattern, 1500, 1500)
 
-# Calculate the dimensions of the covered aria without cutting any tiles
+# Calculate the dimensions of the covered area without cutting any tiles
 {width, height} = Tiles.dimensions(tiles)
 
 # Find adjacent tiles
