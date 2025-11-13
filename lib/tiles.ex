@@ -240,23 +240,6 @@ defmodule Tiles do
     Tile.new(left, top, right - left, bottom - top)
   end
 
-  def filter(tiles, min \\ 4, max \\ 6) do
-    Enum.each(tiles, fn {i, a} ->
-      Enum.filter(a, fn {_t, [dx, dy]} ->
-        dx > max or dy > max or (dx > 0 and dx < min) or (dy > 0 and dy < min)
-      end)
-      |> Enum.each(fn {t, [dx, dy]} ->
-        IO.puts("#{pad(i)} -> #{pad(t, 3)}: #{dx}, #{dy}")
-      end)
-    end)
-  end
-
-  defp pad(value, n \\ 4) do
-    value
-    |> Integer.to_string()
-    |> String.pad_leading(n)
-  end
-
   defp side_distances(tiles, adjacency) do
     # normalize to a tuple so we can do O(1) lookups by index
     tuples = tiles |> List.to_tuple()
